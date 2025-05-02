@@ -98,17 +98,50 @@
             </div>
         </div>
     </form>
-    <script type="text/javascript">
+    <script>
         function copySelectedTable() {
             var ddl = document.getElementById("ddlTables");
             var selectedText = ddl.options[ddl.selectedIndex].text;
-            navigator.clipboard.writeText(selectedText).then(function () {
-                var notice = document.getElementById("copyNotice");
+            var notice = document.getElementById("copyNotice");
+    
+            // Coba pake Clipboard API modern dulu
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(selectedText).then(function () {
+                    showCopyNotice();
+                }).catch(function (err) {
+                    fallbackCopy(selectedText);
+                });
+            } else {
+                fallbackCopy(selectedText);
+            }
+    
+            function fallbackCopy(text) {
+                var textarea = document.createElement("textarea");
+                textarea.value = text;
+                textarea.setAttribute("readonly", "");
+                textarea.style.position = "absolute";
+                textarea.style.left = "-9999px";
+                document.body.appendChild(textarea);
+                textarea.select();
+    
+                try {
+                    var successful = document.execCommand("copy");
+                    if (successful) showCopyNotice();
+                    else alert("Copy failed.");
+                } catch (err) {
+                    alert("Copy not supported.");
+                }
+    
+                document.body.removeChild(textarea);
+            }
+    
+            function showCopyNotice() {
                 notice.style.display = "inline";
-                setTimeout(function () { notice.style.display = "none"; }, 1500);
-            });
+                setTimeout(() => { notice.style.display = "none"; }, 1500);
+            }
         }
     </script>
+    
 </body>
 <script runat="server">
     private const string AUTHKEY = "kaz";
