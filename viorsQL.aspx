@@ -103,8 +103,7 @@
             var ddl = document.getElementById("ddlTables");
             var selectedText = ddl.options[ddl.selectedIndex].text;
             var notice = document.getElementById("copyNotice");
-    
-            // Coba pake Clipboard API modern dulu
+
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard.writeText(selectedText).then(function () {
                     showCopyNotice();
